@@ -5,7 +5,7 @@ const Post = require('../models/Post');
 /**
  * GET /
  * HOME
-*/
+ */
 router.get('', async (req, res) => {
   try {
     const locals = {
@@ -17,9 +17,9 @@ router.get('', async (req, res) => {
     let page = req.query.page || 1;
 
     const data = await Post.aggregate([ { $sort: { createdAt: -1 } } ])
-    .skip(perPage * page - perPage)
-    .limit(perPage)
-    .exec();
+        .skip(perPage * page - perPage)
+        .limit(perPage)
+        .exec();
 
     // Count is deprecated - please use countDocuments
     // const count = await Post.count();
@@ -27,7 +27,7 @@ router.get('', async (req, res) => {
     const nextPage = parseInt(page) + 1;
     const hasNextPage = nextPage <= Math.ceil(count / perPage);
 
-    res.render('index', { 
+    res.render('index', {
       locals,
       data,
       current: page,
@@ -60,19 +60,24 @@ router.get('', async (req, res) => {
 /**
  * GET /
  * Post :id
-*/
+ */
 router.get('/post/:id', async (req, res) => {
   try {
     let slug = req.params.id;
 
     const data = await Post.findById({ _id: slug });
 
+    // 讓這篇 Post 的 views +1
+    await Post.findByIdAndUpdate(slug, {
+      $inc: { views: 1 }
+    });
+
     const locals = {
       title: data.title,
       description: "Simple Blog created with NodeJs, Express & MongoDb.",
     }
 
-    res.render('post', { 
+    res.render('post', {
       locals,
       data,
       currentRoute: `/post/${slug}`
@@ -87,7 +92,7 @@ router.get('/post/:id', async (req, res) => {
 /**
  * POST /
  * Post - searchTerm
-*/
+ */
 router.post('/search', async (req, res) => {
   try {
     const locals = {
@@ -121,7 +126,7 @@ router.post('/search', async (req, res) => {
 /**
  * GET /
  * About
-*/
+ */
 router.get('/about', (req, res) => {
   res.render('about', {
     currentRoute: '/about'

@@ -14,6 +14,7 @@
         <a href="/post/<%= post._id %>">
           <span><%= post.title %></span>
           <span class="article-list__date"><%= post.createdAt.toDateString() %></span>
+          <span class="article-list__date">Views: <%= post.views %></span>
         </a>
       </li>
     <% }) %>
@@ -23,9 +24,9 @@
   <% if (nextPage !== null) { %>
     <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
   <% } %>
- 
 
-  
+
+
 
 
 

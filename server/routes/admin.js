@@ -8,11 +8,10 @@ const jwt = require('jsonwebtoken');
 const adminLayout = '../views/layouts/admin';
 const jwtSecret = process.env.JWT_SECRET;
 
-
 /**
- * 
+ *
  * Check Login
-*/
+ */
 const authMiddleware = (req, res, next ) => {
   const token = req.cookies.token;
 
@@ -33,7 +32,7 @@ const authMiddleware = (req, res, next ) => {
 /**
  * GET /
  * Admin - Login Page
-*/
+ */
 router.get('/admin', async (req, res) => {
   try {
     const locals = {
@@ -51,11 +50,11 @@ router.get('/admin', async (req, res) => {
 /**
  * POST /
  * Admin - Check Login
-*/
+ */
 router.post('/admin', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const user = await User.findOne( { username } );
 
     if(!user) {
@@ -81,7 +80,7 @@ router.post('/admin', async (req, res) => {
 /**
  * GET /
  * Admin Dashboard
-*/
+ */
 router.get('/dashboard', authMiddleware, async (req, res) => {
   try {
     const locals = {
@@ -106,7 +105,7 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
 /**
  * GET /
  * Admin - Create New Post
-*/
+ */
 router.get('/add-post', authMiddleware, async (req, res) => {
   try {
     const locals = {
@@ -130,7 +129,7 @@ router.get('/add-post', authMiddleware, async (req, res) => {
 /**
  * POST /
  * Admin - Create New Post
-*/
+ */
 router.post('/add-post', authMiddleware, async (req, res) => {
   try {
     try {
@@ -154,7 +153,7 @@ router.post('/add-post', authMiddleware, async (req, res) => {
 /**
  * GET /
  * Admin - Create New Post
-*/
+ */
 router.get('/edit-post/:id', authMiddleware, async (req, res) => {
   try {
 
@@ -181,7 +180,7 @@ router.get('/edit-post/:id', authMiddleware, async (req, res) => {
 /**
  * PUT /
  * Admin - Create New Post
-*/
+ */
 router.put('/edit-post/:id', authMiddleware, async (req, res) => {
   try {
 
@@ -203,7 +202,7 @@ router.put('/edit-post/:id', authMiddleware, async (req, res) => {
 // router.post('/admin', async (req, res) => {
 //   try {
 //     const { username, password } = req.body;
-    
+
 //     if(req.body.username === 'admin' && req.body.password === 'password') {
 //       res.send('You are logged in.')
 //     } else {
@@ -219,7 +218,7 @@ router.put('/edit-post/:id', authMiddleware, async (req, res) => {
 /**
  * POST /
  * Admin - Register
-*/
+ */
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -244,7 +243,7 @@ router.post('/register', async (req, res) => {
 /**
  * DELETE /
  * Admin - Delete Post
-*/
+ */
 router.delete('/delete-post/:id', authMiddleware, async (req, res) => {
 
   try {
@@ -257,10 +256,37 @@ router.delete('/delete-post/:id', authMiddleware, async (req, res) => {
 });
 
 
+
+/**
+ * POST /
+ * Admin - Copy Post
+ */
+router.post('/copy-post/:id', authMiddleware, async (req, res) => {
+
+  try {
+
+    const data = await Post.findOne({ _id: req.params.id });
+    const newPost = new Post({
+      title: data.title + '(1)',
+      body: data.body
+    });
+
+    await Post.create(newPost);
+
+    res.redirect('/dashboard');
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+
+
+
 /**
  * GET /
  * Admin Logout
-*/
+ */
 router.get('/logout', (req, res) => {
   res.clearCookie('token');
   //res.json({ message: 'Logout successful.'});
