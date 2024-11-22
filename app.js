@@ -26,7 +26,12 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI
+    mongoUrl: process.env.MONGODB_URI,
+    mongoOptions: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      ssl: true, // 確保啟用 SSL
+    },
   }),
   //cookie: { maxAge: new Date ( Date.now() + (3600000) ) } 
 }));
